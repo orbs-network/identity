@@ -1,5 +1,5 @@
 const NODE_ENV = process.env.NODE_ENV || "development";
-const db = require("knex")(require("./knexfile")[NODE_ENV]);
+const db = require("knex")(require("../knexfile")[NODE_ENV]);
 
 const USERS_TABLE = "users";
 
