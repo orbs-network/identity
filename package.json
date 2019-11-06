@@ -7,25 +7,36 @@
     "gamma:start": "gamma-cli start-local -wait",
     "gamma:stop": "gamma-cli stop-local",
     "identity:local": "node ./src/deploy_identity.js",
-    "test": "mocha test --timeout 20000 --exit"
+    "test": "mocha test --timeout 20000 --exit",
+    "build": "webpack",
+    "dev": "ORBS_NODE_ADDRESS=http://localhost:8080 ORBS_VCHAIN=42 ORBS_PRISM_URL=http://localhost:3000 ORBS_IDENTITY=Identity webpack-dev-server --port 8000"
   },
   "author": "Kirill Maksimov <kirill@orbs.com>",
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.4",
+    "ejs": "^2.7.1",
     "express": "^4.17.1",
     "express-session": "^1.17.0",
     "knex": "^0.20.1",
+    "orbs-client-sdk": "2.2.1",
     "passport": "^0.4.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-session": "^1.0.2",
     "pg": "^7.12.1",
     "sqlite3": "^4.1.0",
-    "orbs-client-sdk": "2.2.1"
+    "uuid": "^3.3.3"
   },
   "devDependencies": {
+    "css-loader": "^3.2.0",
     "expect.js": "^0.3.1",
-    "mocha": "^6.1.4"
+    "mocha": "^6.1.4",
+    "style-loader": "^1.0.0",
+    "svelte": "^3.12.1",
+    "svelte-loader": "^2.13.6",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.9.0"
   }
 }

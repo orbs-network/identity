@@ -20,34 +20,34 @@ passport.use(new GoogleStrategy({
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     callbackURL: CALLBACK_URL,
 }, async (accessToken, refreshToken, profile, cb) => {
-    console.log(profile._json)
-    const user = await getOrCreateUser(profile._json)
+    const user = await getOrCreateUser(profile._json);
+    console.log(user);
+
     cb(undefined, user);
 }));
 
-const app = express();
+function setup(app) {
+    // Configure view engine to render EJS templates.
+    app.set("views", __dirname + "/../views");
+    app.use(express.static(__dirname + "/../public"));
 
-app.use(require("cookie-parser")());
-app.use(require("body-parser").urlencoded({ extended: true }));
-app.use(require("express-session")({ secret: PASSPORT_SESSION_SECRET, resave: true, saveUninitialized: true }));
+    app.use(require("cookie-parser")());
+    app.use(require("body-parser").urlencoded({ extended: true }));
+    app.use(require("express-session")({ secret: PASSPORT_SESSION_SECRET, resave: true, saveUninitialized: true }));
 
-app.use(passport.initialize());
-app.use(passport.session());
+    app.use(passport.initialize());
+    app.use(passport.session());
 
-app.get("/auth/google",
-    passport.authenticate("google", { scope: ["profile", "email"] }));
+    app.get("/auth/google",
+        passport.authenticate("google", { scope: ["profile", "email"] }));
 
-app.get("/auth/google/callback",
-    passport.authenticate("google", { failureRedirect: "/login" }),
-    (req, res) => {
-        // Successful authentication, redirect home.
-        res.redirect("/");
-    });
+    app.get("/auth/google/callback",
+        passport.authenticate("google", { failureRedirect: "/login" }),
+        (req, res) => {
+            // Successful authentication, redirect home.
+            res.redirect("/");
+        });
 
-app.get("/", (req, res) => {
-    res.send(req.user);
-});
-
-module.exports = () => {
     return app;
-};
+}
+module.exports = setup;

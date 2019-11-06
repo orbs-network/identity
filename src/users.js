@@ -1,5 +1,6 @@
 const NODE_ENV = process.env.NODE_ENV || "development";
 const db = require("knex")(require("../knexfile")[NODE_ENV]);
+const uuid = require("uuid").v4;
 
 const USERS_TABLE = "users";
 
@@ -14,7 +15,8 @@ async function createUser(user) {
 async function getOrCreateUser({ sub: id, name, email, hd: org }) {
     let user = await getUser(id);
     if (!user) {
-        user = { id, name, email, org };
+        const identity = uuid();
+        user = { id, name, email, org, identity };
         await createUser(user);
     }
 
