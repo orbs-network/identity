@@ -5,6 +5,8 @@ const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const CALLBACK_URL = process.env.CALLBACK_URL || "http://localhost:8000/auth/google/callback";
 const PASSPORT_SESSION_SECRET = process.env.PASSPORT_SESSION_SECRET || "keyboard cat";
 
+const { getOrCreateUser } = require("./users");
+
 passport.serializeUser(function (user, done) {
     done(null, user);
 });
@@ -17,9 +19,10 @@ passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     callbackURL: CALLBACK_URL,
-}, (accessToken, refreshToken, profile, cb) => {
+}, async (accessToken, refreshToken, profile, cb) => {
     console.log(profile._json)
-    cb(undefined, profile._json);
+    const user = await getOrCreateUser(profile._json)
+    cb(undefined, user);
 }));
 
 const app = express();
