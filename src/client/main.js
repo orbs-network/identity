@@ -23,7 +23,6 @@ if (!localStorage.getItem(SENDER_PUBLIC_KEY)) {
 const publicKey = decodeHex(localStorage.getItem(SENDER_PUBLIC_KEY));
 const privateKey = decodeHex(localStorage.getItem(SENDER_PRIVATE_KEY));
 const address = localStorage.getItem(SENDER_ADDRESS);
-const addressAsBytes = addressToBytes(address);
 
 const signer = new LocalSigner({
     publicKey, privateKey
@@ -43,7 +42,8 @@ const app = new App({
   props: {
     client,
     address,
-    addressAsBytes,
+    addressToBytes,
+    encodeHex,
     signer,
     identity,
     config: {

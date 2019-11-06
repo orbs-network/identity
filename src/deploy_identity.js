@@ -2,7 +2,8 @@ const { readFileSync, readdirSync } = require("fs");
 const { join } = require("path");
 const {
 	Client, LocalSigner, createAccount,
-	PROCESSOR_TYPE_NATIVE, NetworkType
+	PROCESSOR_TYPE_NATIVE, NetworkType,
+	decodeHex
 } = require("orbs-client-sdk");
 
 function getClient(signer) {
@@ -27,8 +28,27 @@ async function deployIdentity(client, contractName) {
 	}
 }
 
+function getLocalSigner() {
+	const { ORBS_PUBLIC_KEY, ORBS_PRIVATE_KEY } = process.env;
+
+	if (!(ORBS_PUBLIC_KEY && ORBS_PRIVATE_KEY)) {
+		return new LocalSigner(createAccount());
+	}
+
+	return new LocalSigner({
+        publicKey: decodeHex(ORBS_PUBLIC_KEY),
+        privateKey: decodeHex(ORBS_PRIVATE_KEY),
+    });
+}
+
+function getContractName() {
+	return process.env.ORBS_IDENTITY || "Identity";
+}
+
 module.exports = {
 	getClient,
+	getLocalSigner,
+	getContractName,
 	getIdentityContractCode,
 	deployIdentity
 }
@@ -36,8 +56,7 @@ module.exports = {
 if (!module.parent) {
 	(async () => {
 		try {
-			const signer = new LocalSigner(createAccount());
-			await deployIdentity(getClient(signer), "Identity")
+			await deployIdentity(getClient(getLocalSigner()), getContractName())
 			console.log("Deployed Identity smart contract successfully");
 		} catch (e) {
 			console.error(e);

@@ -2,16 +2,58 @@
 export let client;
 export let signer;
 export let address;
-export let addressAsBytes;
+export let addressToBytes;
+export let encodeHex;
 export let identity;
 export let config;
 
-// let user = {};
-// let isSignedIn = false;
+let user = {};
+let isSignedIn = false;
+let userIdentity = "";
+let error;
 
 async function getUser() {
     return (await fetch("/auth/user")).json();
 }
+
+async function reload() {
+    try {
+        user = await getUser();
+        isSignedIn = typeof user.identity === "string";
+        userIdentity = await identity.getIdByAddress(addressToBytes(address));
+    } catch (e) {
+        error = e.message;
+    }
+}
+
+async function createIdentity() {
+    try {
+        const signature = await signer.signEd25519(addressToBytes(userIdentity));
+        const request = await fetch("/identity/create", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                address,// FIXME remove later
+                signature: encodeHex(signature)
+            }),
+        });
+        const { status } = await request.json();
+
+        reload();
+
+        if (request.status !== 200) {
+            error = status;
+        } else {
+            error = undefined;
+        }
+    } catch (e) {
+        error = e.message;
+    }
+}
+
+reload();
 
 </script>
 
@@ -37,6 +79,12 @@ async function getUser() {
         </h1>
     </div>
     <div>
+
+    {#if error !== undefined}
+    <p class="error">Could not communicate with the smart contract: {error}</p>
+    {/if}
+
+
     <p>
     Orbs Identity service helps smart contract developers to keep track of users that use 
     multiple keys or are at risk of losing their keys. It verifies user email address via Google sign in, and then issues 
@@ -48,41 +96,23 @@ async function getUser() {
 
     <hr>
 
-    {#await getUser()}
-    <!-- -->
-    {:then user}
-    <p>
-    {#if typeof user.identity === "string"}
-    You are signed in as {user.name} ({user.email}).
-    {:else}
-    You are not <a href="/auth/google">signed in with Google</a>.
+    {#if isSignedIn}
+    <p>You are signed in as {user.name} ({user.email}).</p>
     {/if}
-    </p>
-    {/await}
 
     <p>Your Orbs address is <span class="id">{address}</span></p>
     
     <p>
-    {#await identity.getIdByAddress(addressAsBytes)}
-    Looking up your identity in the smart contract...
-    {:then id}
-    {#if id === ""}
+    {#if userIdentity === ""}
         You do not yet have an identity associated with your address. 
-        {#await getUser()}
-        <!-- -->
-        {:then user}
-        {#if typeof user.identity === "string"}
-        Would you like to <a href="#">create one</a>?
+        {#if isSignedIn}
+        Would you like to <a href="#" on:click|preventDefault={createIdentity}>create one</a>?
         {:else}
         To create one, you first need to <a href="/auth/google">sign in with Google</a>.            
         {/if}
-        {/await}
     {:else}
-        Your Orbs identity in <a href="{config.PrimsUrl}">the smart contract</a> is <span class="id">{id}</span>
+        Your Orbs identity in <a href="{config.PrimsUrl}">the smart contract</a> is <span class="id">{userIdentity}</span>
     {/if}
-    {:catch e}
-    <span class="error">Could not communicate with the smart contract: {e}</span>
-    {/await}
     </p>
     </div>
 </div>
