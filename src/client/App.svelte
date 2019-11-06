@@ -6,6 +6,13 @@ export let addressAsBytes;
 export let identity;
 export let config;
 
+// let user = {};
+// let isSignedIn = false;
+
+async function getUser() {
+    return (await fetch("/auth/user")).json();
+}
+
 </script>
 
 <style>
@@ -41,17 +48,38 @@ export let config;
 
     <hr>
 
-    <p>Your Orbs address is <span class="id">{address}</span></p>
+    {#await getUser()}
+    <!-- -->
+    {:then user}
+    <p>
+    {#if typeof user.identity === "string"}
+    You are signed in as {user.name} ({user.email}).
+    {:else}
+    You are not <a href="/auth/google">signed in with Google</a>.
+    {/if}
+    </p>
+    {/await}
 
+    <p>Your Orbs address is <span class="id">{address}</span></p>
+    
     <p>
     {#await identity.getIdByAddress(addressAsBytes)}
     Looking up your identity in the smart contract...
     {:then id}
-        {#if id === ""}
-            You do not yet have an identity associated with your address. Would you like to <a href="/auth/google">create one</a>?
+    {#if id === ""}
+        You do not yet have an identity associated with your address. 
+        {#await getUser()}
+        <!-- -->
+        {:then user}
+        {#if typeof user.identity === "string"}
+        Would you like to <a href="#">create one</a>?
         {:else}
-            Your Orbs identity in <a href="{config.PrimsUrl}">the smart contract</a> is <span class="id">{id}</span>
+        To create one, you first need to <a href="/auth/google">sign in with Google</a>.            
         {/if}
+        {/await}
+    {:else}
+        Your Orbs identity in <a href="{config.PrimsUrl}">the smart contract</a> is <span class="id">{id}</span>
+    {/if}
     {:catch e}
     <span class="error">Could not communicate with the smart contract: {e}</span>
     {/await}

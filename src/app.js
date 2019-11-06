@@ -8,7 +8,10 @@ const PASSPORT_SESSION_SECRET = process.env.PASSPORT_SESSION_SECRET || "keyboard
 const { getOrCreateUser } = require("./users");
 
 passport.serializeUser(function (user, done) {
-    done(null, user);
+    // only display minimal amount of information
+    const { identity, name, email } = user;
+
+    done(null, { identity, name, email });
 });
 
 passport.deserializeUser(function (user, done) {
@@ -37,6 +40,13 @@ function setup(app) {
 
     app.use(passport.initialize());
     app.use(passport.session());
+
+    app.get("/auth/user", (req, res) => {
+        const user = req.user || {
+            status: "user not found",
+        };
+        res.send(user);
+    });
 
     app.get("/auth/google",
         passport.authenticate("google", { scope: ["profile", "email"] }));
