@@ -37,6 +37,7 @@ async function createIdentity() {
         const publicKey = await signer.getPublicKey();
         const request = await fetch("/identity/create", {
             method: "POST",
+            credentials: "include",
             headers: {
                 "Content-Type": "application/json"
             },

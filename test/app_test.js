@@ -31,11 +31,10 @@ describe("App", () => {
         const publicKey = await signer.getPublicKey();
 
         const request = supertest(app);
-
-        // await request.get("/auth/google").expect(200);
-
+        const { headers } = await request.get("/auth/google");
         const { body, status } = await request
             .post("/identity/create")
+            .set("Cookie", headers["set-cookie"])
             .send({
                 address: account.address,
                 signature: encodeHex(signature),
@@ -54,9 +53,10 @@ describe("App", () => {
         const publicKey = await signer.getPublicKey();
 
         const request = supertest(app);
-
+        const { headers } = await request.get("/auth/google");            
         const { body } = await request
             .post("/identity/create")
+            .set("Cookie", headers["set-cookie"])
             .send({
                 address: "fakeaddress",
                 signature: encodeHex(signature),

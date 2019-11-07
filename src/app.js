@@ -10,6 +10,7 @@ const { getClient, getLocalSigner, getContractName } = require("./deploy_identit
 const { decodeHex } = require("orbs-client-sdk");
 const { verifyIdOwnership } = require("./crypto");
 const identity = new Identity(getClient(getLocalSigner()), getContractName());
+const { get, isEmpty } = require("lodash");
 
 function setup(app, passportStrategy) {
     let passportStrategyName = "google";
@@ -52,31 +53,38 @@ function setup(app, passportStrategy) {
     app.use(passport.session());
 
     app.get("/auth/user", (req, res) => {
-        const user = req.user || {
+        const user = get(req, "session.passport.user") || {
             status: "user not found",
         };
         res.send(user);
     });
 
     app.get("/auth/google",
-        passport.authenticate(passportStrategyName, { scope: ["profile", "email"] }));
+        passport.authenticate(passportStrategyName, { scope: ["profile", "email"], failureRedirect: "/" }), (req, res) => {
+            res.send({
+                status: "mock response" // used for tests
+            })
+        });
+
+        app.get("/", (req, res) => {
+            res.send("")
+        })
 
     app.get("/auth/google/callback",
-        passport.authenticate(passportStrategyName, { failureRedirect: "/" }),
+        passport.authenticate(passportStrategyName, { failureRedirect: "/", session: true }),
         (req, res) => {
             // Successful authentication, redirect home.
             res.redirect("/");
         });
 
-    app.post("/identity/create",  passport.authenticate(passportStrategyName), async (req, res) => {
+    app.post("/identity/create", async (req, res) => {
         try {
-            if (!(req.user && req.user.identity !== "")) {
+            const id = get(req, "session.passport.user.identity");
+            if (isEmpty(id)) {
                 throw new Error("user not found");
             }
 
             const { address, signature, publicKey } = req.body;
-            const id = req.user.identity;
-
             if (!verifyIdOwnership(id, address, decodeHex(publicKey), decodeHex(signature))) {
                 throw new Error("could not establish id ownership by the address");
             }
