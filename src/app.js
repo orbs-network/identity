@@ -9,6 +9,7 @@ const { getOrCreateUser } = require("./users");
 const { Identity } = require("./identity");
 const { getClient, getLocalSigner, getContractName } = require("./deploy_identity");
 const { decodeHex } = require("orbs-client-sdk");
+const { verifyIdOwnership } = require("./crypto");
 
 passport.serializeUser(function (user, done) {
     // only display minimal amount of information
@@ -68,18 +69,20 @@ function setup(app) {
                 throw new Error("user not found");
             }
 
-            const { address, signature } = req.body;
-            console.log(address, signature)
+            const { address, signature, publicKey } = req.body;
+            const id = req.user.identity;
 
-            // FIXME verify signature
-            await identity.registerAddress(decodeHex(address), req.user.identity);
+            if (!verifyIdOwnership(id, address, decodeHex(publicKey), decodeHex(signature))) {
+                throw new Error("could not establish id ownership by the address");
+            }
+            await identity.registerAddress(decodeHex(address), id);
             res.send({
                 status: "ok"
-            })
+            });
         } catch (e) {
             res.status(500).send({
                 status: e.message
-            })
+            });
         }
     })
 

@@ -2,15 +2,20 @@
 export let client;
 export let signer;
 export let address;
-export let addressToBytes;
-export let encodeHex;
 export let identity;
 export let config;
+
+export let addressToBytes;
+export let encodeHex;
 
 let user = {};
 let isSignedIn = false;
 let userIdentity = "";
 let error;
+
+function stringToBytes(val) {
+    return new TextEncoder().encode(val);
+}
 
 async function getUser() {
     return (await fetch("/auth/user")).json();
@@ -28,15 +33,17 @@ async function reload() {
 
 async function createIdentity() {
     try {
-        const signature = await signer.signEd25519(addressToBytes(userIdentity));
+        const signature = await signer.signEd25519(stringToBytes(user.identity));
+        const publicKey = await signer.getPublicKey();
         const request = await fetch("/identity/create", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                address,// FIXME remove later
-                signature: encodeHex(signature)
+                address,
+                signature: encodeHex(signature),
+                publicKey: encodeHex(publicKey),
             }),
         });
         const { status } = await request.json();

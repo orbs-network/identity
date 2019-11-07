@@ -5,7 +5,7 @@ import {
   encodeHex,
   decodeHex,
   LocalSigner,
-  addressToBytes
+  addressToBytes,
 } from "orbs-client-sdk";
 import { Identity } from "../identity";
 
