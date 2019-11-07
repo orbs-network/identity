@@ -16,7 +16,6 @@
   "dependencies": {
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.4",
-    "ejs": "^2.7.1",
     "elliptic": "^6.5.1",
     "express": "^4.17.1",
     "express-session": "^1.17.0",
@@ -33,7 +32,9 @@
     "css-loader": "^3.2.0",
     "expect.js": "^0.3.1",
     "mocha": "^6.1.4",
+    "passport-mock-strategy": "^2.0.0",
     "style-loader": "^1.0.0",
+    "supertest": "^4.0.2",
     "svelte": "^3.12.1",
     "svelte-loader": "^2.13.6",
     "webpack": "^4.41.2",
