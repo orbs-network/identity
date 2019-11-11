@@ -89,19 +89,21 @@ describe("App", () => {
         const signature = await signer.signEd25519(stringToBytes(userIdentity));
         const publicKey = await signer.getPublicKey();
 
+        const randomAddress = createAccount();
+
         const request = supertest(app);
         const { headers } = await request.get("/auth/google");            
         const { body } = await request
             .post("/identity/create")
             .set("Cookie", headers["set-cookie"])
             .send({
-                address: "fakeaddress",
+                address: randomAddress.address,
                 signature: encodeHex(signature),
                 publicKey: encodeHex(publicKey),
             })
             .expect(500);
 
         expect(body.status).to.be.eql("address does not match the public key");
-        expect(await identity.getIdByAddress(stringToBytes("fakeadress"))).to.be.eql("");
+        expect(await identity.getIdByAddress(stringToBytes(randomAddress.address))).to.be.eql("");
     });
 });

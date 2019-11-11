@@ -8,7 +8,6 @@ const { getOrCreateUser } = require("./users");
 const { Identity } = require("./identity");
 const { getClient, getLocalSigner, getContractName } = require("./deploy_identity");
 const { decodeHex } = require("orbs-client-sdk");
-const { verifyIdOwnership } = require("./crypto");
 const identity = new Identity(getClient(getLocalSigner()), getContractName());
 const { get, isEmpty } = require("lodash");
 
@@ -85,9 +84,6 @@ function setup(app, passportStrategy) {
             }
 
             const { address, signature, publicKey } = req.body;
-            if (!verifyIdOwnership(id, address, decodeHex(publicKey), decodeHex(signature))) {
-                throw new Error("could not establish id ownership by the address");
-            }
             await identity.registerAddress(decodeHex(address), id, decodeHex(publicKey), decodeHex(signature));
             res.send({
                 status: "ok"
