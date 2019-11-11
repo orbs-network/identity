@@ -46,6 +46,43 @@ describe("App", () => {
         expect(await identity.getIdByAddress(addressToBytes(account.address))).to.be.eql(userIdentity);
     });
 
+    it("successfully updates identity", async () => {
+        const account = createAccount();
+        const signer = new LocalSigner(account);
+        const signature = await signer.signEd25519(stringToBytes(userIdentity));
+        const publicKey = await signer.getPublicKey();
+
+        const anotherAccount = createAccount()
+        const anotherSigner = new LocalSigner(anotherAccount);
+        const anotherSignature = await anotherSigner.signEd25519(stringToBytes(userIdentity));
+        const anotherPublicKey = await anotherSigner.getPublicKey();
+
+        const request = supertest(app);
+        const { headers } = await request.get("/auth/google");
+        await request
+            .post("/identity/create")
+            .set("Cookie", headers["set-cookie"])
+            .send({
+                address: account.address,
+                signature: encodeHex(signature),
+                publicKey: encodeHex(publicKey),
+            }).expect(200);
+
+        expect(await identity.getIdByAddress(addressToBytes(account.address))).to.be.eql(userIdentity);
+
+        await request
+            .post("/identity/create")
+            .set("Cookie", headers["set-cookie"])
+            .send({
+                address: anotherAccount.address,
+                signature: encodeHex(anotherSignature),
+                publicKey: encodeHex(anotherPublicKey),
+            }).expect(200);
+
+        expect(await identity.getIdByAddress(addressToBytes(anotherAccount.address))).to.be.eql(userIdentity);
+        expect(await identity.getIdByAddress(addressToBytes(account.address))).to.be.eql("");
+    });
+
     it("with bad address", async () => {
         const account = createAccount();
         const signer = new LocalSigner(account);
