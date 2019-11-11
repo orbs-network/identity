@@ -35,7 +35,7 @@ function verifyIdOwnership(id, address, publicKey, signature) {
     if (address === addressFromPublicKey) {
         return verifyEd25519(publicKey, stringToBytes(id), signature);
     } else {
-        throw new Error("Address does not match the public key!")
+        throw new Error("address does not match the public key")
     }
 }
 

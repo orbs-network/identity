@@ -88,7 +88,7 @@ function setup(app, passportStrategy) {
             if (!verifyIdOwnership(id, address, decodeHex(publicKey), decodeHex(signature))) {
                 throw new Error("could not establish id ownership by the address");
             }
-            await identity.registerAddress(decodeHex(address), id);
+            await identity.registerAddress(decodeHex(address), id, decodeHex(publicKey), decodeHex(signature));
             res.send({
                 status: "ok"
             });

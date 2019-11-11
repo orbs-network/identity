@@ -11,13 +11,15 @@ class Identity {
 		this.contractName = contractName;
 	}
 
-	async registerAddress(addr, id) {
+	async registerAddress(addr, id, publicKey, signature) {
 		const [ tx, txId ] = await this.client.createTransaction(
 			this.contractName,
 			"registerAddress",
 			[
 				argBytes(addr),
-				argString(id)
+				argString(id),
+				argBytes(publicKey),
+				argBytes(signature)
 			]
 		);
 

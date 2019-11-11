@@ -101,7 +101,7 @@ describe("App", () => {
             })
             .expect(500);
 
-        expect(body.status).to.be.eql("Address does not match the public key!");
+        expect(body.status).to.be.eql("address does not match the public key");
         expect(await identity.getIdByAddress(stringToBytes("fakeadress"))).to.be.eql("");
     });
 });

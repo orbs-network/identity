@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/hex"
-
 	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1"
 	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/address"
 	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/state"
@@ -18,10 +17,18 @@ func _init() {
 	state.WriteBytes(OWNER_KEY, address.GetSignerAddress())
 }
 
-func registerAddress(address []byte, id string) {
+func registerAddress(address []byte, id string, publicKey []byte, signature []byte) {
 	ownerOnly()
 	if id == "" {
 		panic("can't set address for default id")
+	}
+
+	if !verifyAddress(address, publicKey) {
+		panic("address does not match the public key")
+	}
+
+	if !verifySignature(publicKey, []byte(id), signature) {
+		panic("could not establish id ownership by the address")
 	}
 
 	if oldAddress := getAddressById(id); oldAddress != nil {
