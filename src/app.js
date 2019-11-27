@@ -1,7 +1,7 @@
 const express = require("express");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 
-const CALLBACK_URL = process.env.CALLBACK_URL || "http://localhost:8000/auth/google/callback";
+const CALLBACK_URL = process.env.CALLBACK_URL || "http://localhost:9000/auth/google/callback";
 const PASSPORT_SESSION_SECRET = process.env.PASSPORT_SESSION_SECRET || "keyboard cat";
 
 const { getOrCreateUser } = require("./users");

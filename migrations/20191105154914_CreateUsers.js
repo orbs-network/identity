@@ -3,7 +3,7 @@ exports.up = async function (knex) {
         table.string("id").primary().unique().notNullable();
         table.string("name").notNullable();
         table.string("email").unique().notNullable();
-        table.string("org").notNullable();
+        table.string("org").nullable();
         table.string("identity").primary().unique().notNullable();
     })
 };

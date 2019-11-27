@@ -1,4 +1,4 @@
-const { argString, argBytes, argUint64, argUint32 } = require("orbs-client-sdk");
+const { argString, argBytes, argUint64, argUint32, addressToBytes } = require("orbs-client-sdk");
 
 function getErrorFromReceipt(receipt) {
     const value = receipt.outputArguments.length == 0 ? receipt.executionResult : receipt.outputArguments[0].value;
@@ -34,7 +34,7 @@ class Identity {
 			this.contractName,
 			"getIdByAddress",
 			[
-				argBytes(addr)
+				argBytes(addressToBytes(addr))
 			]
 		);
 

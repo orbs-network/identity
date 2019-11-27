@@ -9,7 +9,8 @@
     "identity:local": "node ./src/deploy_identity.js",
     "test": "mocha test --timeout 20000 --exit",
     "build": "webpack",
-    "dev": "ORBS_NODE_ADDRESS=http://localhost:8080 ORBS_VCHAIN=42 ORBS_PRISM_URL=http://localhost:3000 ORBS_IDENTITY=Identity webpack-dev-server --port 8000"
+    "dev": "ORBS_NODE_ADDRESS=http://localhost:8080 ORBS_VCHAIN=42 ORBS_PRISM_URL=http://localhost:3000 ORBS_IDENTITY=Identity webpack-dev-server --port 9000",
+    "migrate": "knex migrate:latest"
   },
   "author": "Kirill Maksimov <kirill@orbs.com>",
   "license": "MIT",
@@ -26,7 +27,8 @@
     "passport-session": "^1.0.2",
     "pg": "^7.12.1",
     "sqlite3": "^4.1.0",
-    "uuid": "^3.3.3"
+    "uuid": "^3.3.3",
+    "orbs-wallet": "https://github.com/orbs-network/wallet#master"
   },
   "devDependencies": {
     "css-loader": "^3.2.0",

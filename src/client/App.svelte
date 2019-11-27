@@ -1,11 +1,9 @@
 <script>
-export let client;
-export let signer;
+export let account;
 export let address;
 export let identity;
 export let config;
 
-export let addressToBytes;
 export let encodeHex;
 
 let user = {};
@@ -25,7 +23,7 @@ async function reload() {
     try {
         user = await getUser();
         isSignedIn = typeof user.identity === "string";
-        userIdentity = await identity.getIdByAddress(addressToBytes(address));
+        userIdentity = await identity.getIdByAddress(address);
     } catch (e) {
         error = e.message;
     }
@@ -33,8 +31,8 @@ async function reload() {
 
 async function createIdentity() {
     try {
-        const signature = await signer.signEd25519(stringToBytes(user.identity));
-        const publicKey = await signer.getPublicKey();
+        const signature = await account.signEd25519(stringToBytes(user.identity));
+        const publicKey = await account.getPublicKey();
         const request = await fetch("/identity/create", {
             method: "POST",
             credentials: "include",

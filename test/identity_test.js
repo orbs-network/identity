@@ -20,11 +20,11 @@ describe("Identity", () => {
 		const publicKey = await randomSigner.getPublicKey();
         const identity = new Identity(getClient(signer), contractName);
 
-		const defaultValue = await identity.getIdByAddress(randomAddressAsBytes);
+		const defaultValue = await identity.getIdByAddress(randomAddress.address);
 		expect(defaultValue).to.be.eql("");
 
 		await identity.registerAddress(randomAddressAsBytes, "Nicolas Cage", publicKey, signature);
-        const updatedValue = await identity.getIdByAddress(randomAddressAsBytes);
+        const updatedValue = await identity.getIdByAddress(randomAddress.address);
         expect(updatedValue).to.be.eql("Nicolas Cage");
 	});
 
@@ -43,7 +43,7 @@ describe("Identity", () => {
 		const publicKey = await randomSigner.getPublicKey();
         const identity = new Identity(getClient(signer), contractName);
 
-		const defaultValue = await identity.getIdByAddress(randomAddressAsBytes);
+		const defaultValue = await identity.getIdByAddress(randomAddress.address);
 		expect(defaultValue).to.be.eql("");
 
 		let err;
@@ -54,7 +54,7 @@ describe("Identity", () => {
 		}
 		expect(err.message).to.be.eql("could not establish id ownership by the address");
 
-        const updatedValue = await identity.getIdByAddress(randomAddressAsBytes);
+        const updatedValue = await identity.getIdByAddress(randomAddress.address);
         expect(updatedValue).to.be.eql("");
 	});
 
@@ -73,7 +73,7 @@ describe("Identity", () => {
 		const publicKey = await randomSigner.getPublicKey();
         const identity = new Identity(getClient(signer), contractName);
 
-		const defaultValue = await identity.getIdByAddress(randomAddressAsBytes);
+		const defaultValue = await identity.getIdByAddress(randomAddress.address);
 		expect(defaultValue).to.be.eql("");
 
 		let err;
@@ -84,7 +84,7 @@ describe("Identity", () => {
 		}
 		expect(err.message).to.be.eql("address does not match the public key");
 
-        const updatedValue = await identity.getIdByAddress(randomAddressAsBytes);
+        const updatedValue = await identity.getIdByAddress(randomAddress.address);
         expect(updatedValue).to.be.eql("");
     });
 });

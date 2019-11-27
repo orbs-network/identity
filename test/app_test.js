@@ -1,6 +1,6 @@
 const expect = require("expect.js");
 const { stringToBytes } = require("../src/crypto");
-const { LocalSigner, createAccount, encodeHex, addressToBytes } = require("orbs-client-sdk");
+const { LocalSigner, createAccount, encodeHex } = require("orbs-client-sdk");
 const MockStrategy = require("passport-mock-strategy");
 const uuid = require("uuid").v4;
 const express = require("express");
@@ -43,7 +43,7 @@ describe("App", () => {
 
         expect(body.status).to.be.eql("ok");
 
-        expect(await identity.getIdByAddress(addressToBytes(account.address))).to.be.eql(userIdentity);
+        expect(await identity.getIdByAddress(account.address)).to.be.eql(userIdentity);
     });
 
     it("successfully updates identity", async () => {
@@ -68,7 +68,7 @@ describe("App", () => {
                 publicKey: encodeHex(publicKey),
             }).expect(200);
 
-        expect(await identity.getIdByAddress(addressToBytes(account.address))).to.be.eql(userIdentity);
+        expect(await identity.getIdByAddress(account.address)).to.be.eql(userIdentity);
 
         await request
             .post("/identity/create")
@@ -79,8 +79,8 @@ describe("App", () => {
                 publicKey: encodeHex(anotherPublicKey),
             }).expect(200);
 
-        expect(await identity.getIdByAddress(addressToBytes(anotherAccount.address))).to.be.eql(userIdentity);
-        expect(await identity.getIdByAddress(addressToBytes(account.address))).to.be.eql("");
+        expect(await identity.getIdByAddress(anotherAccount.address)).to.be.eql(userIdentity);
+        expect(await identity.getIdByAddress(account.address)).to.be.eql("");
     });
 
     it("with bad address", async () => {
@@ -104,6 +104,6 @@ describe("App", () => {
             .expect(500);
 
         expect(body.status).to.be.eql("address does not match the public key");
-        expect(await identity.getIdByAddress(stringToBytes(randomAddress.address))).to.be.eql("");
+        expect(await identity.getIdByAddress(randomAddress.address)).to.be.eql("");
     });
 });
