@@ -31,16 +31,16 @@
     "orbs-wallet": "https://github.com/orbs-network/wallet#master"
   },
   "devDependencies": {
-    "css-loader": "^3.2.0",
+    "css-loader": "^6.7.3",
     "expect.js": "^0.3.1",
     "mocha": "^6.1.4",
     "passport-mock-strategy": "^2.0.0",
     "style-loader": "^1.0.0",
     "supertest": "^4.0.2",
     "svelte": "^3.12.1",
-    "svelte-loader": "^2.13.6",
-    "webpack": "^4.41.2",
-    "webpack-cli": "^3.3.10",
+    "svelte-loader": "^3.1.4",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1",
     "webpack-dev-server": "^3.9.0"
   }
 }
